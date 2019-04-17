@@ -1,0 +1,71 @@
+﻿<!-- /.panel-heading -->
+<div class="panel-body">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Rating</th>
+                    <th>Score</th>
+                    <th>Release Date</th>
+                </tr>
+            </thead>
+            <tbody id="movies-tbody"></tbody>
+        </table>
+    </div>
+    <!-- /.table-responsive -->
+</div>
+<!-- /.panel-body -->
+@section scripts
+    {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url: "http://localhost:54051/api/movies/search",
+                method: "GET",
+                success: function (result) {
+                    for (var i = 0; i < result.length; i++) {
+                        var newRow = "<tr><td><a href='/Movies/Details?id=" +
+                            result[i].Id +
+                            "'>" +
+                            result[i].Title +
+                            "</a></td><td>" +
+                            result[i].CategoryName +
+                            "</td><td>" +
+                            result[i].Rating +
+                            "</td><td>" +
+                            result[i].AverageScore +
+                            "</td><td>" +
+                            result[i].ReleaseDate +
+                            "</td><td><button class='btn btn-default delete' data-id='" +
+                            result[i].Id +
+                            "'>Delete</button></td></tr>";
+                        $("#movies-tbody").append(newRow);
+                    }
+
+                    $(document).on("click",
+                        ".delete",
+                        function () {
+                            var id = $(this).data('id');
+                            var tr = $(this).parent().parent();
+
+                            $.ajax({
+                                url: 'http://localhost:54051/api/movies/' + id,
+                                method: 'DELETE',
+                                success: function () {
+                                    tr.remove();
+                                },
+                                error: function (err) {
+                                    alert("error");
+                                }
+                            });
+                        });
+                },
+                error: function (err) {
+                    alert("error");
+                }
+            });
+        })
+    </script>
+}
